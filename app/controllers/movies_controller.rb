@@ -1,5 +1,7 @@
 class MoviesController < ApplicationController
   
+
+  
   def show
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
@@ -8,29 +10,40 @@ class MoviesController < ApplicationController
 
   def index
     
+    if (params["commit"] == "Refresh")
+      session.delete(:sort_type)
+      session.delete(:ratings_to_show)
+    end
+    
     @all_ratings = Movie.all_ratings
-    @ratings_to_show = []
+    @ratings_to_show = session[:ratings_to_show] || []
     @title_class = ""
     @release_class = ""
-    @sort_type = ""
-    
+    @sort_type = session[:sort_type] || ""
+
     
     if (params["ratings"])
       @ratings_to_show = params["ratings"].keys
+      session[:ratings_to_show] = @ratings_to_show
     end
     
     if (params["id"] == "title_header")
-      @title_class = "hilite"
-      @release_class = ""
       @sort_type = "title"
-    elsif params["id"] == "release_date_header" 
-      @release_class = "hilite"
-      @title_class = ""
+      session[:sort_type] = @sort_type
+    elsif (params["id"] == "release_date_header")
       @sort_type = "release_date"
+      session[:sort_type] = @sort_type
     end
     
-    @movies = Movie.with_ratings(@ratings_to_show, @sort_type)
-        
+    if (@sort_type == "title")
+      @title_class = "hilite"
+      @release_class = ""
+    elsif (@sort_type == "release_date")
+      @release_class = "hilite"
+      @title_class = ""
+    end
+    
+    @movies = Movie.with_ratings(@ratings_to_show, @sort_type)  
     
     #{"class"=>"text-primary hilite", "id"=>"title_header", "controller"=>"movies", "action"=>"index"}
     #"ratings"=>{"PG"=>"1", "PG-13"=>"1"}, "commit"=>"Refresh", "controller"=>"movies", "action"=>"index"

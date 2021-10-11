@@ -9,8 +9,6 @@ class Movie < ActiveRecord::Base
   #  movies with those ratings
   # if ratings_list is nil, retrieve ALL movies
     
-    
-    
     if (ratings_list.length == 0)
       return Movie.order(sort_type).all
     else
