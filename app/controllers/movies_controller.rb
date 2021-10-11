@@ -36,16 +36,13 @@ class MoviesController < ApplicationController
     # ratings assignment
     if (params["ratings"])
       @ratings_to_show = params["ratings"].keys
-      session[:ratings_to_show] = @ratings_to_show
     end
     
     # sorting assignment
     if (params["id"] == "title_header")
       @sort_type = "title"
-      session[:sort_type] = @sort_type
     elsif (params["id"] == "release_date_header")
       @sort_type = "release_date"
-      session[:sort_type] = @sort_type
     end
     
     if (@sort_type == "title")
@@ -55,6 +52,9 @@ class MoviesController < ApplicationController
       @release_class = "hilite"
       @title_class = ""
     end
+    
+    session[:ratings_to_show] = @ratings_to_show
+    session[:sort_type] = @sort_type
     
     @movies = Movie.with_ratings(@ratings_to_show, @sort_type)  
     
