@@ -9,14 +9,14 @@ class MoviesController < ApplicationController
   end
 
   def index
-    
+
     if (params["commit"] == "Refresh")
       session.delete(:sort_type)
       session.delete(:ratings_to_show)
     end
     
     @all_ratings = Movie.all_ratings
-    @ratings_to_show = session[:ratings_to_show] || []
+    @ratings_to_show = session[:ratings_to_show] || @all_ratings
     @title_class = ""
     @release_class = ""
     @sort_type = session[:sort_type] || ""
