@@ -14,19 +14,32 @@ class MoviesController < ApplicationController
       session.delete(:sort_type)
       session.delete(:ratings_to_show)
     end
-    
+   
+      
     @all_ratings = Movie.all_ratings
     @ratings_to_show = session[:ratings_to_show] || @all_ratings
     @title_class = ""
     @release_class = ""
     @sort_type = session[:sort_type] || ""
 
+    # redirect
+    if (!params["id"] && !params["ratings"])
+      header = ""
+      if (@sort_type == "title")
+         header = "title_header"
+      elsif (@sort_type == "release_date")
+         header = "release_date_header"
+      end
+      redirect_to movies_path(:id => header, :ratings => Hash[@ratings_to_show.map {|x| [x, 1]}])
+    end
     
+    # ratings assignment
     if (params["ratings"])
       @ratings_to_show = params["ratings"].keys
       session[:ratings_to_show] = @ratings_to_show
     end
     
+    # sorting assignment
     if (params["id"] == "title_header")
       @sort_type = "title"
       session[:sort_type] = @sort_type
@@ -45,8 +58,6 @@ class MoviesController < ApplicationController
     
     @movies = Movie.with_ratings(@ratings_to_show, @sort_type)  
     
-    #{"class"=>"text-primary hilite", "id"=>"title_header", "controller"=>"movies", "action"=>"index"}
-    #"ratings"=>{"PG"=>"1", "PG-13"=>"1"}, "commit"=>"Refresh", "controller"=>"movies", "action"=>"index"
   end
 
   
