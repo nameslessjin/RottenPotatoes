@@ -10,20 +10,33 @@ class MoviesController < ApplicationController
     
     @all_ratings = Movie.all_ratings
     @ratings_to_show = []
+    @title_class = ""
+    @release_class = ""
+    @sort_type = ""
     
-
+    
     if (params["ratings"])
       @ratings_to_show = params["ratings"].keys
     end
-
     
-    @movies = Movie.with_ratings(@ratings_to_show)
+    if (params["id"] == "title_header")
+      @title_class = "hilite"
+      @release_class = ""
+      @sort_type = "title"
+    elsif params["id"] == "release_date_header" 
+      @release_class = "hilite"
+      @title_class = ""
+      @sort_type = "release_date"
+    end
     
+    @movies = Movie.with_ratings(@ratings_to_show, @sort_type)
+        
     
-    
+    #{"class"=>"text-primary hilite", "id"=>"title_header", "controller"=>"movies", "action"=>"index"}
     #"ratings"=>{"PG"=>"1", "PG-13"=>"1"}, "commit"=>"Refresh", "controller"=>"movies", "action"=>"index"
   end
 
+  
   def new
     # default: render 'new' template
   end
